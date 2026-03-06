@@ -5,7 +5,7 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage, ImageMess
 import tensorflow as tf
 from PIL import Image, ImageOps
 import numpy as np
- app = Flask(__name__)
+app = Flask(__name__)
  line_bot_api = LineBotApi('2009339761')
  handler = WebhookHandler('4d635c6839b20911f6d904274eb908c6')
  model = tensorflow.keras.models.load_model('keras_model.h5')
