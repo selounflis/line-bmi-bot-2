@@ -12,17 +12,17 @@ model = tensorflow.keras.models.load_model('keras_model.h5')
 labels = open('labels.txt', 'r').readlines()
 @app.route("/callback", methods=['POST'])
 def callback():
-     signature = request.headers['x-line-signature']
-     body = request.get_data(as_text=True)
-     try:
-         handler.handle(body, signature)
+    signature = request.headers['x-line-signature']
+    body = request.get_data(as_text=True)
+    try:
+        handler.handle(body, signature)
     except InvalidSignatureError:
         abort(400)
     return 'OK'
 @handler.add(MessageEvent, message=TextMessage) 
- def handler_text_message(event):
-     text = event.message.text
-     if "น้ำหนัก"in text and"ส่วนสูง" in text:
+def handler_text_message(event):
+    text = event.message.text
+    if "น้ำหนัก"in text and"ส่วนสูง" in text:
          try:
              parts = text.split()
              w = float(parts[1])
@@ -31,13 +31,13 @@ def callback():
              result = f"BMI ของคุณ{bmi:.2f}\n"
              if bmi < 18.5:
                  advice = "ค่า BMI ของคุณต่ำกว่าเกณฑ์นะคะ ควรเน้นโปรตีนและคาร์โบไฮเดรตค่ะ เช่น ข้าวผัดหมู แซนวิชไข่ เนื่องจากอาหารเหล่านี้มี คาร์โบไฮเดรตให้พลังงาน(ข้าว และ ขนมปัง) และมีโปรตีนช่วยให้ได้รับพลังงาน(ไข่ และ หมู)"
-            elif bmi < 23:
-                advice = "ค่า BMI ของคุณอยู่ในเกณฑ์ปกตินะคะ รักษามาตรฐานนี้ไว้นะคะ"
-            else:
-                advice = "ค่า BMI ของคุณสูงกว่าเกณฑ์นะคะ ควรเลี่ยงของทอดและของหวาน แนะนำอาหารที่ควรทาน เช่น ข้าวกับต้มจืด เนื่องจากเมนูนี้ให้พลังงานพอดีและเป็นอาหารไขมันต่ำค่ะ"
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(Text=result+advice))
-        except:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="กรุณาพิมพ์ในรูปแบบ: น้ำหนัก 70 ส่วนสูง 170"))
+             elif bmi < 23:
+                 advice = "ค่า BMI ของคุณอยู่ในเกณฑ์ปกตินะคะ รักษามาตรฐานนี้ไว้นะคะ"
+             else:
+                 advice = "ค่า BMI ของคุณสูงกว่าเกณฑ์นะคะ ควรเลี่ยงของทอดและของหวาน แนะนำอาหารที่ควรทาน เช่น ข้าวกับต้มจืด เนื่องจากเมนูนี้ให้พลังงานพอดีและเป็นอาหารไขมันต่ำค่ะ"
+             line_bot_api.reply_message(event.reply_token, TextSendMessage(Text=result+advice))
+         except:
+             line_bot_api.reply_message(event.reply_token, TextSendMessage(text="กรุณาพิมพ์ในรูปแบบ: น้ำหนัก 70 ส่วนสูง 170"))
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image_message(event):
     message_content = line_bot_api.get_message_content(event.message.id)
@@ -54,9 +54,17 @@ def handle_image_message(event):
     prediction = model.predict(data)
     index = np.argmax(prediction)
     food_name = labels[index].strip()
-    calories_db = {"ก๋วยเตี๋ยว": 330-350, "ข้าวมันไก่ต้ม": 539-619, "ข้าวมันไก่ทอด": 693-800, "ข้าวกะเพรา": 580-630, "ข้าวต้ม": 200-300}
+    calories_db = {
+         "ก๋วยเตี๋ยว": 330-350, 
+         "ข้าวมันไก่ต้ม": 539-619, 
+         "ข้าวมันไก่ทอด": 693-800, 
+         "ข้าวกะเพรา": 580-630, 
+         "ข้าวต้ม": 200-300
+    }
+    display_name = food_name.split(' ',1)[-1] if ' ' in food_name else food_name
     cal = calories_db.get(food_name, "ไม่ทราบข้อมูล")
     reply = f"นี่คือ: {food_name}\nพลังงานโดยประมาณ: {cal} kcal"
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+     port = int(os.environ.get("PORT", 5000)
+     app.run(host='0.0.0.0', port=port)
