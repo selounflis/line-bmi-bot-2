@@ -11,7 +11,7 @@ handler = WebhookHandler('4d635c6839b20911f6d904274eb908c6')
 model = tensorflow.keras.models.load_model('keras_model.h5')
 labels = open('labels.txt', 'r').readlines()
 @app.route("/callback", methods=['POST'])
- def callback():
+def callback():
      signature = request.headers['x-line-signature']
      body = request.get_data(as_text=True)
      try:
