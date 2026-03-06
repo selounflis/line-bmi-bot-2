@@ -26,6 +26,7 @@ def handler_text_message(event):
              parts = text.split()
              w = float(parts[1])
              h = float(parts[3])
+             h = h/100
              bmi = w / (h**2)
              result = f"BMI ของคุณ{bmi:.2f}\n"
              if bmi < 18.5:
