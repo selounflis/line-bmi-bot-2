@@ -1,16 +1,16 @@
- from flask import Flask, request, abort
- from linebot import LineBotApi, WebhookHandler
- from linebot.exceptions import InvalidSignatureError
- from linebot.models import MessageEvent, TextMessage, TextSendMessage, ImageMessage
- import tensorflow as tf
- from PIL import Image, ImageOps
- import numpy as np
+from flask import Flask, request, abort
+from linebot import LineBotApi, WebhookHandler
+from linebot.exceptions import InvalidSignatureError
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, ImageMessage
+import tensorflow as tf
+from PIL import Image, ImageOps
+import numpy as np
  app = Flask(__name__)
  line_bot_api = LineBotApi('2009339761')
  handler = WebhookHandler('4d635c6839b20911f6d904274eb908c6')
  model = tensorflow.keras.models.load_model('keras_model.h5')
  labels = open('labels.txt', 'r').readlines()
- @app.route("/callback", methods=['POST'])
+@app.route("/callback", methods=['POST'])
  def callback():
      signature = request.headers['x-line-signature']
      body = request.get_data(as_text=True)
